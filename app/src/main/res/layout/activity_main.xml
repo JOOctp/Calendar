@@ -15,7 +15,8 @@
         app:textSelectedColor="@color/white"
         app:textWeekEndColor="@color/red_error"
         app:buttonStrokeColor="@color/purple_200"
-        app:buttonIconColor="@color/purple_200"/>
+        app:buttonIconColor="@color/purple_200"
+        app:selectedBackground="@drawable/bg_custom_calender_selected"/>
 
     <TextView
         android:id="@+id/tv_select_date"
