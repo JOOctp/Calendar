@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomCalendarView">
+        <attr name="textWeekEndColor" format="color|reference"/>
+        <attr name="textSelectedColor" format="color|reference"/>
+        <attr name="themeColor" format="color|reference"/>
+        <attr name="locale" format="string"/>
+        <attr name="backgroundSelected" format="reference" />
+    </declare-styleable>
+</resources>
