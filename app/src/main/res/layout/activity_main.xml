@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <com.jop.calendar.CalendarView
@@ -11,6 +12,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:locale="id-ID"
-        app:textWeekEndColor="@color/design_default_color_error"/>
+        app:textSelectedColor="@color/white"
+        app:textWeekEndColor="@color/red_error"
+        app:buttonStrokeColor="@color/purple_200"
+        app:buttonIconColor="@color/purple_200"/>
 
+    <TextView
+        android:id="@+id/tv_select_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_margin="16dp"
+        android:text=""
+        android:textColor="@color/black"/>
 </LinearLayout>
