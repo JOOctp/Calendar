@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
     tools:parentTag="android.widget.LinearLayout">
 
     <LinearLayout
@@ -19,16 +20,23 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/iv_pref"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:padding="2dp"
-                android:background="@drawable/bg_btn_pref"
-                android:src="@drawable/ic_chevron_left"
-                android:tint="@color/color_primary"
-                tools:ignore="UseAppTint"
-                android:contentDescription="prev" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_pref"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/color_primary">
+                <ImageView
+                    android:id="@+id/iv_pref"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_chevron_left"
+                    tools:ignore="UseAppTint"
+                    android:tint="@color/color_primary"/>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/tv_month"
@@ -36,22 +44,29 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:textSize="14dp"
+                android:textSize="16dp"
                 android:textAlignment="center"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:textColor="@color/black" />
 
-            <ImageButton
-                android:id="@+id/iv_next"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:padding="2dp"
-                android:background="@drawable/bg_btn_pref"
-                android:src="@drawable/ic_chevron_right"
-                android:tint="@color/color_primary"
-                tools:ignore="UseAppTint"
-                android:contentDescription="next"/>
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_next"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/color_primary">
+                <ImageView
+                    android:id="@+id/iv_next"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_chevron_right"
+                    tools:ignore="UseAppTint"
+                    android:tint="@color/color_primary"/>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
         <LinearLayout

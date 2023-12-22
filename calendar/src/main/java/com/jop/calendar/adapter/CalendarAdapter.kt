@@ -21,7 +21,7 @@ class CalendarAdapter(private val listener: CalendarAdapterListener): RecyclerVi
     private var locale = Locale("id", "ID")
     private var weekendColor : ColorStateList? = null
     private var selectedDateColor : ColorStateList? = null
-    private var backgroundSelected: Int? = null
+    private var backgroundSelected: Int = 0
 
     inner class MyViewHolder(private val view: View): RecyclerView.ViewHolder(view){
         val binding = ItemLayoutDateBinding.bind(view)
@@ -37,28 +37,25 @@ class CalendarAdapter(private val listener: CalendarAdapterListener): RecyclerVi
         val displayFormat = SimpleDateFormat("dd", locale)
 
         val value = items[position]
-        dateNow.set(Calendar.HOUR_OF_DAY, 0)
-        dateNow.set(Calendar.MINUTE, 0)
-        dateNow.set(Calendar.SECOND, 0)
 
         holder.binding.apply {
-            if(selectedItem != null && value == selectedItem) {
-                root.tag = "selected"
-                tvDate.setTextColor(selectedDateColor ?: ColorStateList.valueOf(holder.binding.root.context.resources.getColor(R.color.white)))
-                tvDate.setBackgroundResource(backgroundSelected ?: R.drawable.bg_calender_selected)
-            } else {
-                root.tag = "none"
-                tvDate.setTextColor(ColorStateList.valueOf(holder.binding.root.context.resources.getColor(R.color.black)))
-                tvDate.setBackgroundResource(0)
-            }
-
             if(value.isNotEmpty()){
                 dateNow.time = dateFormat.parse(value)
                 val dateNowSTR = dateFormat.format(Calendar.getInstance().time)
                 val numberOfDay = DateUtil.formatDateFromAPI(value, dateFormat, displayFormat)
 
-                if(dateNow.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || dateNow.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
+                if(selectedItem != null && value == selectedItem) {
+                    root.tag = "selected"
+                    tvDate.setTextColor(selectedDateColor ?: ColorStateList.valueOf(holder.binding.root.context.resources.getColor(R.color.white)))
+                    tvDate.setBackgroundResource(if(backgroundSelected > 0) backgroundSelected else R.drawable.bg_calender_selected)
+                } else if(dateNow.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || dateNow.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
+                    root.tag = "none"
                     tvDate.setTextColor(weekendColor ?: ColorStateList.valueOf(holder.binding.root.context.resources.getColor(R.color.red_error)))
+                    tvDate.setBackgroundResource(0)
+                } else {
+                    root.tag = "none"
+                    tvDate.setTextColor(ColorStateList.valueOf(holder.binding.root.context.resources.getColor(R.color.black)))
+                    tvDate.setBackgroundResource(0)
                 }
 
                 if(dateNowSTR.equals(value, true)){
@@ -68,6 +65,7 @@ class CalendarAdapter(private val listener: CalendarAdapterListener): RecyclerVi
                 }
             } else {
                 tvDate.text = ""
+                tvDate.setBackgroundResource(0)
             }
 
             root.setOnClickListener {
@@ -84,9 +82,10 @@ class CalendarAdapter(private val listener: CalendarAdapterListener): RecyclerVi
         return items.count()
     }
 
-    fun setData(list: MutableList<String>, locale: Locale){
+    fun setData(list: MutableList<String>, locale: Locale, selectedItem: String? = null){
         this.items.addAll(list)
         this.locale = locale
+        this.selectedItem = selectedItem
         notifyDataSetChanged()
     }
 
@@ -95,20 +94,25 @@ class CalendarAdapter(private val listener: CalendarAdapterListener): RecyclerVi
         notifyDataSetChanged()
     }
 
-    fun setupTheme(weekendColor: ColorStateList?, selectedDateColor: ColorStateList?, @DrawableRes backgroundSelected: Int?){
+    fun setWeekEndColor(weekendColor: ColorStateList?){
         this.weekendColor = weekendColor
-        this.selectedDateColor = selectedDateColor
+        notifyDataSetChanged()
+    }
+
+    fun setSelectedDateColor(weekendColor: ColorStateList?){
+        this.selectedDateColor = weekendColor
+        notifyDataSetChanged()
+    }
+
+    fun setBackgroundSelected(@DrawableRes backgroundSelected: Int){
         this.backgroundSelected = backgroundSelected
+        notifyDataSetChanged()
     }
 
     fun clear(){
         this.items.clear()
         this.selectedItem = null
         notifyDataSetChanged()
-    }
-
-    fun getDataOriginal() : MutableList<String>{
-        return this.items
     }
 
     interface CalendarAdapterListener{

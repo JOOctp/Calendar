@@ -34,6 +34,7 @@ class CalendarView @JvmOverloads constructor(context: Context, attrs: AttributeS
     private var monthNow: Int = 1
     private var yearNow: Int = 2022
     private var dateNow: String = ""
+    private lateinit var listener: CalendarViewListener
 
     init {
         monthNow = calendar.get(Calendar.MONTH)
@@ -54,8 +55,8 @@ class CalendarView @JvmOverloads constructor(context: Context, attrs: AttributeS
             rcCalender.isFocusable = false
             rcCalender.adapter = adapter
 
-            ivNext.setOnClickListener { getDayOfMonth(true) }
-            ivPref.setOnClickListener { getDayOfMonth(false) }
+            btnNext.setOnClickListener { getDayOfMonth(true) }
+            btnPref.setOnClickListener { getDayOfMonth(false) }
         }
 
         attrs?.let {
@@ -64,22 +65,71 @@ class CalendarView @JvmOverloads constructor(context: Context, attrs: AttributeS
             // COLOR
             val textWeekEndColor = styledAttributes.getColorStateList(R.styleable.CustomCalendarView_textWeekEndColor)
             val textSelectedColor = styledAttributes.getColorStateList(R.styleable.CustomCalendarView_textSelectedColor)
-            val themeColor = styledAttributes.getColorStateList(R.styleable.CustomCalendarView_themeColor)
 
             // BACKGROUND
-            val backgroundSelected = styledAttributes.getResourceId(R.styleable.CustomCalendarView_backgroundSelected, 0)
+            val backgroundSelected = styledAttributes.getResourceId(R.styleable.CustomCalendarView_selectedBackground, 0)
+
+            //BUTTON
+            val buttonStrokeColor = styledAttributes.getColorStateList(R.styleable.CustomCalendarView_buttonStrokeColor)
+            val buttonBackgroundColor = styledAttributes.getColorStateList(R.styleable.CustomCalendarView_buttonBackgroundColor)
+            val buttonIconColor = styledAttributes.getColorStateList(R.styleable.CustomCalendarView_buttonIconColor)
+            val isCircleButton = styledAttributes.getBoolean(R.styleable.CustomCalendarView_isCircleButton, false)
 
             val settingLocale = styledAttributes.getString(R.styleable.CustomCalendarView_locale)
 
             setLocale(Locale.Builder().setLanguageTag(settingLocale ?: "id-ID").build())
-            setDateOfMonthColor(textWeekEndColor, textSelectedColor, backgroundSelected)
-            setupTheme(themeColor)
+            setWeekEndColor(textWeekEndColor)
+            setSelectedColor(textSelectedColor)
+            setBackgroundSelected(backgroundSelected)
+
+            setButtonStrokeColor(buttonStrokeColor)
+            setButtonBackgroundColor(buttonBackgroundColor)
+            setButtonIconColor(buttonIconColor)
+            setIsCircleButton(isCircleButton)
+
             getDayOfMonth(null)
             styledAttributes.recycle()
         }
     }
 
-    private fun setLocale(locale: Locale){
+    fun setButtonStrokeColor(buttonStrokeColor: ColorStateList?){
+        binding.btnPref.setStrokeColor(buttonStrokeColor ?: ColorStateList.valueOf(context.resources.getColor(R.color.color_primary)))
+        binding.btnNext.setStrokeColor(buttonStrokeColor ?: ColorStateList.valueOf(context.resources.getColor(R.color.color_primary)))
+    }
+
+    fun setButtonBackgroundColor(buttonBackgroundColor: ColorStateList?){
+        binding.btnPref.setCardBackgroundColor(buttonBackgroundColor ?: ColorStateList.valueOf(context.resources.getColor(R.color.white)))
+        binding.btnNext.setCardBackgroundColor(buttonBackgroundColor ?: ColorStateList.valueOf(context.resources.getColor(R.color.white)))
+    }
+
+    fun setButtonIconColor(buttonIconColor: ColorStateList?){
+        binding.ivNext.imageTintList = buttonIconColor ?: ColorStateList.valueOf(context.resources.getColor(R.color.color_primary))
+        binding.ivPref.imageTintList = buttonIconColor ?: ColorStateList.valueOf(context.resources.getColor(R.color.color_primary))
+    }
+
+    fun setIsCircleButton(isCircleButton: Boolean){
+        binding.btnNext.radius = if(isCircleButton) sizeUtil(16f) else sizeUtil(8f)
+        binding.btnPref.radius = if(isCircleButton) sizeUtil(16f) else sizeUtil(8f)
+    }
+
+    fun setBackgroundSelected(@DrawableRes backgroundSelected: Int) {
+        adapter.setBackgroundSelected(backgroundSelected)
+    }
+
+    fun setSelectedColor(textSelectedColor: ColorStateList?) {
+        adapter.setSelectedDateColor(textSelectedColor)
+    }
+
+    fun setWeekEndColor(textWeekEndColor: ColorStateList?) {
+        val setupTextWeekEndColor = textWeekEndColor ?: ColorStateList.valueOf(context.resources.getColor(R.color.red_error))
+        adapter.setWeekEndColor(textWeekEndColor)
+
+        listDayOfWeek.forEachIndexed { index, day ->
+            binding.lnDayOfWeek.addView(TextViewDayOfWeek(context, day, if(index == 0 || index == 6) setupTextWeekEndColor else ColorStateList.valueOf(context.resources.getColor(R.color.black))))
+        }
+    }
+
+    fun setLocale(locale: Locale){
         this.locale = locale
 
         dateFormat = SimpleDateFormat("yyyy-MM-dd", locale)
@@ -89,6 +139,7 @@ class CalendarView @JvmOverloads constructor(context: Context, attrs: AttributeS
         dateNow = dateFormat.format(Date())
 
         listDayOfWeek.clear()
+        binding.lnDayOfWeek.removeAllViews()
 
         val cal = Calendar.getInstance()
         cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
@@ -99,21 +150,10 @@ class CalendarView @JvmOverloads constructor(context: Context, attrs: AttributeS
             cal.add(Calendar.DATE, 1)
             listDayOfWeek.add(dayFormat.format(cal.time))
         }
-
-        binding.lnDayOfWeek.removeAllViews()
     }
 
-    private fun setDateOfMonthColor(textWeekEndColor: ColorStateList?, textSelectedColor: ColorStateList?, @DrawableRes backgroundSelected: Int?){
-        val setupTextWeekEndColor = textWeekEndColor ?: ColorStateList.valueOf(context.resources.getColor(R.color.red_error))
-        adapter.setupTheme(setupTextWeekEndColor,textSelectedColor, backgroundSelected)
-
-        listDayOfWeek.forEachIndexed { index, day ->
-            binding.lnDayOfWeek.addView(TextViewDayOfWeek(context, day, if(index == 0 || index == 6) setupTextWeekEndColor else ColorStateList.valueOf(context.resources.getColor(R.color.black))))
-        }
-    }
-
-    private fun setupTheme(themeColor: ColorStateList?) {
-
+    fun setCalenderViewListener(listener: CalendarViewListener){
+        this.listener = listener
     }
 
     private fun getDayOfMonth(isNext: Boolean?){
@@ -151,11 +191,20 @@ class CalendarView @JvmOverloads constructor(context: Context, attrs: AttributeS
             listDateOfMonth.add(0, "")
         }
 
-        adapter.setData(listDateOfMonth, locale)
+        adapter.setData(listDateOfMonth, locale, selectedDay)
+    }
+
+    private fun sizeUtil(size: Float): Float{
+        return  size * Resources.getSystem().displayMetrics.density + 0.5f
     }
 
     override fun onSelectedDate(date: String) {
         this.selectedDay = date
         adapter.setSelectedItem(selectedDay)
+        if(::listener.isInitialized) listener.onSelectedDate(dateFormat.parse(date)!!)
+    }
+
+    interface CalendarViewListener{
+        fun onSelectedDate(date: Date)
     }
 }

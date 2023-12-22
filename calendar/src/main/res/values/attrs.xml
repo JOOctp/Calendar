@@ -3,8 +3,11 @@
     <declare-styleable name="CustomCalendarView">
         <attr name="textWeekEndColor" format="color|reference"/>
         <attr name="textSelectedColor" format="color|reference"/>
-        <attr name="themeColor" format="color|reference"/>
+        <attr name="selectedBackground" format="reference" />
         <attr name="locale" format="string"/>
-        <attr name="backgroundSelected" format="reference" />
+        <attr name="buttonStrokeColor" format="reference"/>
+        <attr name="buttonBackgroundColor" format="reference"/>
+        <attr name="buttonIconColor" format="reference"/>
+        <attr name="isCircleButton" format="boolean"/>
     </declare-styleable>
 </resources>
