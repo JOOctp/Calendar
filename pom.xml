@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.JOOctp</groupId>
     <artifactId>Calendar</artifactId>
-    <version>1.0.0</version> <!-- 1.0 -->
+    <version>1.0.3</version> <!-- 1.0 -->
     <packaging>pom</packaging>
     <description>First version release</description>
 </project>

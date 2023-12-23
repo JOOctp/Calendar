@@ -63,7 +63,7 @@ publishing{
         create<MavenPublication>("maven") {
             groupId = "com.github.JOOctp"
             artifactId = "Calendar"
-            version = "1.0.0"
+            version = "1.0.3"
 
             pom {
                 description.set("My First release Custom Calendar View")
