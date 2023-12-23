@@ -15,6 +15,6 @@ dependencyResolutionManagement {
 2. Step two Add the dependency:
 ```
 dependencies {
-  implementation("com.github.JOOctp:Calendar:1.0.0")
+  implementation("com.github.JOOctp:Calendar:1.0.3")
 }
 ```
